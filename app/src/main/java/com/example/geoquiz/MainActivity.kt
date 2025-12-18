@@ -17,13 +17,13 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import android.widget.Toast
 import androidx.compose.ui.text.font.FontWeight
 import com.example.geoquiz.ui.theme.GeoQuizTheme
+import androidx.compose.ui.platform.LocalContext
 
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -52,9 +52,12 @@ fun GeoQuizApp() {
         "The Amazon River is the longest river in the Americas.",
         "Lake Baikal is the world's oldest and deepest freshwater lake."
     )
+    val answers = listOf(true, true, false, false, true, true) // правильные ответы
 
     val currentIndex = remember { mutableStateOf(0) }
     val answered = remember { mutableStateOf(false) } // отслеживаем ответ
+    val correctAnswers = remember { mutableStateOf(0) } // счетчик правильных ответов
+    val context = LocalContext.current // контекст для Toast
 
     Column(
         modifier = Modifier
@@ -73,13 +76,29 @@ fun GeoQuizApp() {
         if (!answered.value) {
             Row(horizontalArrangement = Arrangement.spacedBy(16.dp)) {
                 Button(onClick = {
-                    answered.value = true // скрываем кнопки после ответа
+                    answered.value = true
+                    // проверяем ответ True
+                    val correct = answers[currentIndex.value] == true
+                    if (correct) {
+                        correctAnswers.value++
+                        Toast.makeText(context, "Правильно!", Toast.LENGTH_SHORT).show()
+                    } else {
+                        Toast.makeText(context, "Неправильно!", Toast.LENGTH_SHORT).show()
+                    }
                 }) {
                     Text("True")
                 }
 
                 Button(onClick = {
-                    answered.value = true // скрываем кнопки после ответа
+                    answered.value = true
+                    // проверяем ответ False
+                    val correct = answers[currentIndex.value] == false
+                    if (correct) {
+                        correctAnswers.value++
+                        Toast.makeText(context, "Правильно!", Toast.LENGTH_SHORT).show()
+                    } else {
+                        Toast.makeText(context, "Неправильно!", Toast.LENGTH_SHORT).show()
+                    }
                 }) {
                     Text("False")
                 }
