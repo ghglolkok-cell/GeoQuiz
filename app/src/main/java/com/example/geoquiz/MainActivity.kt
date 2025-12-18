@@ -1,6 +1,7 @@
 package com.example.geoquiz
 
 import android.os.Bundle
+import android.widget.Toast
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.compose.foundation.layout.Arrangement
@@ -20,11 +21,11 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import android.widget.Toast
 import androidx.compose.ui.text.font.FontWeight
 import com.example.geoquiz.ui.theme.GeoQuizTheme
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.window.Dialog
+import com.example.geoquiz.ui.theme.GeoQuizTheme
 
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -128,8 +129,10 @@ fun GeoQuizApp() {
             }
         }
     }
-    // НОВОЕ: диалог с результатами
+    // Диалог с результатами
     if (showResult.value) {
+        val isPerfectScore = correctAnswers.value == questions.size
+
         Dialog(onDismissRequest = { showResult.value = false }) {
             Surface(
                 shape = MaterialTheme.shapes.medium,
@@ -144,20 +147,41 @@ fun GeoQuizApp() {
                         fontSize = 20.sp,
                         modifier = Modifier.padding(bottom = 16.dp)
                     )
-                    Text(
-                        text = "Правильных ответов: ${correctAnswers.value} из ${questions.size}",
-                        fontSize = 16.sp,
-                        modifier = Modifier.padding(bottom = 16.dp)
-                    )
-                    Button(onClick = { showResult.value = false }) {
-                        Text("OK")
+
+                    if (isPerfectScore) {
+                        Text(
+                            text = "Тест пройден полностью правильно!",
+                            fontSize = 16.sp,
+                            fontWeight = FontWeight.Bold,
+                            modifier = Modifier.padding(bottom = 16.dp)
+                        )
+                    } else {
+                        Text(
+                            text = "Правильных ответов: ${correctAnswers.value} из ${questions.size}",
+                            fontSize = 16.sp,
+                            modifier = Modifier.padding(bottom = 16.dp)
+                        )
+                    }
+
+                    if (isPerfectScore) {
+                        Button(onClick = { showResult.value = false }) {
+                            Text("OK")
+                        }
+                    } else {
+                        Button(onClick = {
+                            currentIndex.value = 0
+                            correctAnswers.value = 0
+                            answered.value = false
+                            showResult.value = false
+                        }) {
+                            Text("Пройти тест заново")
+                        }
                     }
                 }
             }
         }
     }
 }
-
 @Preview(showBackground = true)
 @Composable
 
