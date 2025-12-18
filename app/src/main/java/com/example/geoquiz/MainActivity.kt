@@ -106,10 +106,10 @@ fun GeoQuizApp() {
         }
 
         // кнопка Next активна только после ответа
-        if (answered.value) {
+        if (answered.value && currentIndex.value < questions.size - 1) {
             Button(
                 onClick = {
-                    currentIndex.value = (currentIndex.value + 1) % questions.size
+                    currentIndex.value++
                     answered.value = false // сбрасываем флаг ответа
                 },
                 modifier = Modifier.padding(top = 16.dp)
