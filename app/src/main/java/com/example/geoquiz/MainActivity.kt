@@ -24,6 +24,7 @@ import android.widget.Toast
 import androidx.compose.ui.text.font.FontWeight
 import com.example.geoquiz.ui.theme.GeoQuizTheme
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.window.Dialog
 
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -57,6 +58,7 @@ fun GeoQuizApp() {
     val currentIndex = remember { mutableStateOf(0) }
     val answered = remember { mutableStateOf(false) } // отслеживаем ответ
     val correctAnswers = remember { mutableStateOf(0) } // счетчик правильных ответов
+    val showResult = remember { mutableStateOf(false) } // НОВОЕ: флаг для показа результатов
     val context = LocalContext.current // контекст для Toast
 
     Column(
@@ -85,6 +87,10 @@ fun GeoQuizApp() {
                     } else {
                         Toast.makeText(context, "Неправильно!", Toast.LENGTH_SHORT).show()
                     }
+                    // НОВОЕ: проверяем последний вопрос
+                    if (currentIndex.value == questions.size - 1) {
+                        showResult.value = true
+                    }
                 }) {
                     Text("True")
                 }
@@ -98,6 +104,10 @@ fun GeoQuizApp() {
                         Toast.makeText(context, "Правильно!", Toast.LENGTH_SHORT).show()
                     } else {
                         Toast.makeText(context, "Неправильно!", Toast.LENGTH_SHORT).show()
+                    }
+                    // НОВОЕ: проверяем последний вопрос
+                    if (currentIndex.value == questions.size - 1) {
+                        showResult.value = true
                     }
                 }) {
                     Text("False")
@@ -115,6 +125,34 @@ fun GeoQuizApp() {
                 modifier = Modifier.padding(top = 16.dp)
             ) {
                 Text("Next Question")
+            }
+        }
+    }
+    // НОВОЕ: диалог с результатами
+    if (showResult.value) {
+        Dialog(onDismissRequest = { showResult.value = false }) {
+            Surface(
+                shape = MaterialTheme.shapes.medium,
+                color = MaterialTheme.colorScheme.surface
+            ) {
+                Column(
+                    modifier = Modifier.padding(16.dp),
+                    horizontalAlignment = Alignment.CenterHorizontally
+                ) {
+                    Text(
+                        text = "Результат теста",
+                        fontSize = 20.sp,
+                        modifier = Modifier.padding(bottom = 16.dp)
+                    )
+                    Text(
+                        text = "Правильных ответов: ${correctAnswers.value} из ${questions.size}",
+                        fontSize = 16.sp,
+                        modifier = Modifier.padding(bottom = 16.dp)
+                    )
+                    Button(onClick = { showResult.value = false }) {
+                        Text("OK")
+                    }
+                }
             }
         }
     }
