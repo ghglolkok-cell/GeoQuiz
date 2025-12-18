@@ -42,56 +42,64 @@ class MainActivity : ComponentActivity() {
     }
 }
 
-    @Composable
-            fun GeoQuizApp() {
-                val questions = listOf(
-                    "Canberra is the capital of Australia.",
-                    "The Pacific Ocean is larger than the Atlantic Ocean.",
-                    "The Suez Canal connects the Red Sea and the Indian Ocean.",
-                    "The source of the Nile River is in Egypt.",
-                    "The Amazon River is the longest river in the Americas.",
-                    "Lake Baikal is the world's oldest and deepest freshwater lake."
-                )
+@Composable
+fun GeoQuizApp() {
+    val questions = listOf(
+        "Canberra is the capital of Australia.",
+        "The Pacific Ocean is larger than the Atlantic Ocean.",
+        "The Suez Canal connects the Red Sea and the Indian Ocean.",
+        "The source of the Nile River is in Egypt.",
+        "The Amazon River is the longest river in the Americas.",
+        "Lake Baikal is the world's oldest and deepest freshwater lake."
+    )
 
-                val currentIndex = remember { mutableStateOf(0) }
+    val currentIndex = remember { mutableStateOf(0) }
+    val answered = remember { mutableStateOf(false) } // отслеживаем ответ
 
-                Column(
-                    modifier = Modifier
-                        .fillMaxSize()
-                        .padding(16.dp),
-                    horizontalAlignment = Alignment.CenterHorizontally,
-                    verticalArrangement = Arrangement.Center
-                ) {
-                    Text(
-                        text = questions[currentIndex.value],
-                        fontSize = 18.sp,
-                        modifier = Modifier.padding(bottom = 32.dp)
-                    )
+    Column(
+        modifier = Modifier
+            .fillMaxSize()
+            .padding(16.dp),
+        horizontalAlignment = Alignment.CenterHorizontally,
+        verticalArrangement = Arrangement.Center
+    ) {
+        Text(
+            text = questions[currentIndex.value],
+            fontSize = 18.sp,
+            modifier = Modifier.padding(bottom = 32.dp)
+        )
 
-                    Row(horizontalArrangement = Arrangement.spacedBy(16.dp)) {
-                        Button(onClick = {
-                            currentIndex.value = (currentIndex.value + 1) % questions.size
-                        }) {
-                            Text("True")
-                        }
+        // показываем кнопки ответов только если еще не ответили
+        if (!answered.value) {
+            Row(horizontalArrangement = Arrangement.spacedBy(16.dp)) {
+                Button(onClick = {
+                    answered.value = true // скрываем кнопки после ответа
+                }) {
+                    Text("True")
+                }
 
-                        Button(onClick = {
-                            currentIndex.value = (currentIndex.value + 1) % questions.size
-                        }) {
-                            Text("False")
-                        }
-                    }
-
-                    Button(
-                        onClick = {
-                            currentIndex.value = (currentIndex.value + 1) % questions.size
-                        },
-                        modifier = Modifier.padding(top = 16.dp)
-                    ) {
-                        Text("Next Question")
-                    }
+                Button(onClick = {
+                    answered.value = true // скрываем кнопки после ответа
+                }) {
+                    Text("False")
                 }
             }
+        }
+
+        // кнопка Next активна только после ответа
+        if (answered.value) {
+            Button(
+                onClick = {
+                    currentIndex.value = (currentIndex.value + 1) % questions.size
+                    answered.value = false // сбрасываем флаг ответа
+                },
+                modifier = Modifier.padding(top = 16.dp)
+            ) {
+                Text("Next Question")
+            }
+        }
+    }
+}
 
 @Preview(showBackground = true)
 @Composable
